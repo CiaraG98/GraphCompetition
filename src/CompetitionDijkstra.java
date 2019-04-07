@@ -34,7 +34,7 @@ class Edge{
 
 public class CompetitionDijkstra {
 
-	int sA, sB, sC;
+	int sA, sB, sC, N;
 	LinkedList<Edge>[] graph;
     /**
      * @param filename: A filename containing the details of the city road network
@@ -47,7 +47,7 @@ public class CompetitionDijkstra {
     	this.sC = sC;
     	//read in file
     	Scanner input = new Scanner(new File(filename));
-    	int N = input.nextInt();
+    	this.N = input.nextInt();//number of V
     	int S = input.nextInt();
     	
     	//Create Array of Linked lists, each index is a vertex and contains the vertex with an edge between it plus the weight of that edge
@@ -68,7 +68,6 @@ public class CompetitionDijkstra {
     			}
     		}
     	}
-    	
     }
 
 
@@ -81,6 +80,11 @@ public class CompetitionDijkstra {
         return -1;
     }
     
+    public double dijkstra(LinkedList<Edge>[] graph, int source) {
+    	
+    	return 1;
+    }
+    
     @Override
 	public String toString(){
 		String graph="";
@@ -90,8 +94,8 @@ public class CompetitionDijkstra {
 	}
 
     public static void main(String[] args) throws FileNotFoundException {
-    	String test = "1000EWD.txt";
-    	CompetitionDijkstra cd = new CompetitionDijkstra(test, 1, 2, 4);
+    	String test = "tinyEWD.txt";
+    	CompetitionDijkstra cd = new CompetitionDijkstra(test, 1, 2, 4);    	
     	System.out.println(cd.toString());
     }
 }
