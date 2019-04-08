@@ -27,52 +27,57 @@ class Edge{
 	public Edge(int v, double w) {
 		this.v = v;
 		this.weight = w;
-	}
-	/*@Override
-	public String toString() {
-		return "(" + "connected to: " + v + ", with weight: " + weight + ")";
-	}*/
-	
+	}	
 }
-
 
 public class CompetitionFloydWarshall {
 
 	int sA, sB, sC, N;
 	double time;
-	LinkedList<Edge>[] graph;
+	LinkedList<Edge>[] graph;//adjacency list
     /**
      * @param filename: A filename containing the details of the city road network
      * @param sA, sB, sC: speeds for 3 contestants
      * @throws FileNotFoundException 
      */
-    CompetitionFloydWarshall (String filename, int sA, int sB, int sC) throws FileNotFoundException{
+    CompetitionFloydWarshall (String filename, int sA, int sB, int sC) {
     	this.sA = sA;
     	this.sB = sB;
     	this.sC = sC;
-    	//read in file
-    	Scanner input = new Scanner(new File(filename));
-    	this.N = input.nextInt();
-    	int S = input.nextInt();
     	
-    	//Creates Array of Linked lists, each index is a linked list that contains the vertex that index is connected too and its weight
-    	this.graph = new LinkedList[N];
-    	for(int i = 0; i < graph.length; i++) {
-    		graph[i] =  new LinkedList<Edge>();
-    	}
-    	while(input.hasNext())
-    	{
-    		int v1 = input.nextInt();
-    		int v2 = input.nextInt();
-    		double cost = input.nextDouble();
-    		Edge e = new Edge(v2, cost);
-    		for(int i = 0; i < graph.length; i++) {
-    			if(i == v1) {
-    				graph[i].add(e);
-    			}
-    		}
-    	}
+    	//read in file
+    	Scanner input;
+		try {
+			input = new Scanner(new File(filename));
+			this.N = input.nextInt();
+        	int S = input.nextInt();
+        	
+        	//Creates Array of Linked lists, each index is a linked list that contains the vertex that index is connected too and its weight
+        	this.graph = new LinkedList[N];
+        	for(int i = 0; i < graph.length; i++) {
+        		graph[i] =  new LinkedList<Edge>();
+        	}
+        	while(input.hasNext())
+        	{
+        		int v1 = input.nextInt();
+        		int v2 = input.nextInt();
+        		double cost = input.nextDouble();
+        		Edge e = new Edge(v2, cost);
+        		for(int i = 0; i < graph.length; i++) {
+        			if(i == v1) {
+        				graph[i].add(e);
+        			}
+        		}
+        	}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		catch (NullPointerException e2) {
+			e2.printStackTrace();
+		}
     	this.time = timeRequiredforCompetition();
+    	
     }
 
 
@@ -80,26 +85,31 @@ public class CompetitionFloydWarshall {
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
     public int timeRequiredforCompetition(){
+    	if(graph == null || sA < 50 || sB < 50 || sC < 50 || sA > 100 || sB > 100 || sC > 100)
+    		return -1;
+    	else {
+    		//Algorithm
+        	double[][] paths = floydWarshall(graph);
+        	
+        	//finds longest shortest path
+        	double l = paths[0][0];
+        	for(int i = 0; i < paths.length; i++) {
+            	for(int j = 0; j < paths[i].length; j++) {
+            		if(paths[i][j] > l)
+            			l = paths[i][j];
+            		if(paths[i][j] == Double.POSITIVE_INFINITY)
+            			return -1;
+            	}
+            }
+        	
+        	//calculates time taken 
+        	int speed = getSlowestSpeed(sA, sB, sC);
+        	l *= 1000;
+        	double time = l/speed;
+        	time = (int) Math.ceil(time);
+            return (int) time;
+    	}
     	
-    	//Algorithm
-    	double[][] paths = floydWarshall(graph);
-    	
-    	//finds longest shortest path
-    	double l = paths[0][0];
-    	for(int i = 0; i < paths.length; i++) {
-        	for(int j = 0; j < paths[i].length; j++) {
-        		if(paths[i][j] > l)
-        			l = paths[i][j];
-        	}
-        }
-    	
-    	//calculates time taken 
-    	int speed = getSlowestSpeed(sA, sB, sC);
-    	l *= 1000;
-    	double time = l/speed;
-    	time = (int) Math.ceil(time);
-    	
-        return (int) time;
     }
     
     /*
@@ -149,30 +159,4 @@ public class CompetitionFloydWarshall {
     	
     	return dist;
     }
-    
-   /* @Override
-   	public String toString(){
-   		String graph="";
-   		for(int i=0; i<this.graph.length; i++)
-   			graph+= "Vertex " + i + " => " + this.graph[i] + "\n";
-   		return graph;
-   	}
-    
-    public void printMatrix(double[][] graph) {
-    	for(int i = 0; i < N; i++) {
-    		System.out.println(" ");
-    		for(int j = 0; j < N; j++) {
-    			System.out.print(graph[i][j] + "  ");
-    		}
-    	}
-    }
-
-       public static void main(String[] args) throws FileNotFoundException {
-       	String test = "tinyEWD.txt";
-       	CompetitionFloydWarshall cd = new CompetitionFloydWarshall(test, 55, 60, 70);
-       	System.out.println(cd.toString());
-       	System.out.println(" ");
-       	System.out.println("Time: " + cd.timeRequiredforCompetition());
-       }*/
-
 }

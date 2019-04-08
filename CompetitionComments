@@ -1,0 +1,29 @@
+ /* @Override
+   	public String toString(){
+   		String graph="";
+   		for(int i=0; i<this.graph.length; i++)
+   			graph+= "Vertex " + i + " => " + this.graph[i] + "\n";
+   		return graph;
+   	}
+    
+    public void printMatrix(double[][] graph) {
+    	for(int i = 0; i < N; i++) {
+    		System.out.println(" ");
+    		for(int j = 0; j < N; j++) {
+    			System.out.print(graph[i][j] + "  ");
+    		}
+    	}
+    }
+
+       public static void main(String[] args) throws FileNotFoundException {
+       	String test = "tinyEWD.txt";
+       	CompetitionFloydWarshall cd = new CompetitionFloydWarshall(test, 55, 60, 70);
+       	System.out.println(cd.toString());
+       	System.out.println(" ");
+       	System.out.println("Time: " + cd.timeRequiredforCompetition());
+       }*/
+       
+       /*@Override
+	public String toString() {
+		return "(" + "connected to: " + v + ", with weight: " + weight + ")";
+	}*/
