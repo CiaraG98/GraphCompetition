@@ -18,24 +18,12 @@ import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-class Edge{
-	int v; 
-	double weight;
-	public Edge(int v, double w) {
-		this.v = v;
-		this.weight = w;
-	}
-	@Override
-	public String toString() {
-		return "(" + "connected to: " + v + ", with weight: " + weight + ")";
-	}
-	
-}
 
 public class CompetitionDijkstra {
 
 	int sA, sB, sC, N;
-	LinkedList<Edge>[] graph;
+	double[][] graph;
+	double time;
     /**
      * @param filename: A filename containing the details of the city road network
      * @param sA, sB, sC: speeds for 3 contestants
@@ -48,54 +36,126 @@ public class CompetitionDijkstra {
     	//read in file
     	Scanner input = new Scanner(new File(filename));
     	this.N = input.nextInt();//number of V
-    	int S = input.nextInt();
-    	
-    	//Create Array of Linked lists, each index is a vertex and contains the vertex with an edge between it plus the weight of that edge
-    	this.graph = new LinkedList[N];
-    	for(int i = 0; i < graph.length; i++) {
-    		graph[i] =  new LinkedList<Edge>();
-    	}
-    
-    	while(input.hasNext())
-    	{
+    	int S = input.nextInt(); //number of E
+    	this.graph = new double[N][N];
+    	while(input.hasNextInt()) {
     		int v1 = input.nextInt();
-    		int v2 = input.nextInt();
-    		double cost = input.nextDouble();
-    		Edge e = new Edge(v2, cost);
-    		for(int i = 0; i < graph.length; i++) {
-    			if(i == v1) {
-    				graph[i].add(e);
+			int v2 = input.nextInt();
+			double cost = input.nextDouble();
+    		for(int i = 0; i < N; i++) {
+        		for(int j = 0; j < N; j++) {
+        			if(v1 == i && v2 == j) {
+        				graph[i][j] = cost;
+        			}
+        			
+        		}
+    		}
+    	}
+    	for(int i = 0; i < N; i++) {
+    		for(int j = 0; j < N; j++) {
+    			if(graph[i][j] == 0) {
+    				graph[i][j] = Double.POSITIVE_INFINITY;
     			}
     		}
     	}
+    	
+    	this.time = timeRequiredforCompetition();
     }
 
+    public int getSlowestSpeed(int sA, int sB, int sC) {
+    	if(sA < sB && sA < sC) 
+    		return sA;
+    	else if(sB < sA && sB < sC)
+    		return sB;
+    	else
+    		return sC;
+    }
+    
 
     /**
     * @return int: minimum minutes that will pass before the three contestants can meet
      */
     public int timeRequiredforCompetition(){
-
-        //TO DO
-        return -1;
-    }
-    
-    public double dijkstra(LinkedList<Edge>[] graph, int source) {
+    	double[] shortestPaths = new double[N];
+    	for(int i = 0; i < N; i++) {
+        	double[] paths = dijkstra(graph, i);
+        	double l = paths[0];
+        	//find longest path
+        	for(int j = 0; j < N; j++) {
+        		if(paths[j] > l)
+        			l = paths[j];
+        	}
+        	//array of longest paths
+        	shortestPaths[i] = l;
+    	}
+    	double p = shortestPaths[0];
+    	for(int v = 0; v < N; v++) {
+    		if(shortestPaths[v] > p)
+    			p = shortestPaths[v];
+    	}
+    	int speed = getSlowestSpeed(sA, sB, sC);
+    	p *= 1000;
+    	double time = p/speed;
+    	time = (int) Math.ceil(time);
     	
-    	return 1;
+    	System.out.println("Longest Shortest Path: " + p);
+    	System.out.println(Arrays.toString(shortestPaths));
+    	return (int) time;
+       
     }
     
-    @Override
-	public String toString(){
-		String graph="";
-		for(int i=0; i<this.graph.length; i++)
-			graph+= "Vertex " + i + " => " + this.graph[i] + "\n";
-		return graph;
-	}
-
+    public int findMinDistance(double[] dist, boolean[] visited) {
+    	double min = Double.POSITIVE_INFINITY;
+    	int index = 0;
+    	for(int i = 0; i < N; i++) {
+    		if(visited[i] == false && dist[i] <= min) {
+    			min = dist[i];
+    			index = i;
+    		}
+    	}
+    	return index;
+    }
+    public double[] dijkstra(double[][] graph, int source) {
+    	double[] dist = new double[N];//shortest distances from the source
+    	boolean[] visited = new boolean[N];//true if the vertex i is included in dist
+    	for(int i = 0; i < dist.length; i++) {
+    		dist[i] = Double.POSITIVE_INFINITY;
+    		visited[i] = false;
+    	}
+    	dist[source] = 0;
+    	
+    	for(int i = 0; i < N - 1; i++) {
+    		int v = findMinDistance(dist, visited);//finds shortest distance
+    		visited[v] = true; 
+    		for(int j = 0; j < N; j++) {
+    			if(visited[j] == false && graph[v][j] != 0) {
+    				if(dist[v] != Double.POSITIVE_INFINITY && dist[v] + graph[v][j] < dist[j]) {
+    					dist[j] = dist[v] + graph[v][j];
+    				}
+    			}
+    		}
+    		
+    	}
+    	
+    	
+    	return dist;
+    }
+    
+    /*public void printMatrix(double[][] graph) {
+    	for(int i = 0; i < N; i++) {
+    		System.out.println(" ");
+    		for(int j = 0; j < N; j++) {
+    			System.out.print(graph[i][j] + "  ");
+    		}
+    	}
+    }
     public static void main(String[] args) throws FileNotFoundException {
     	String test = "tinyEWD.txt";
-    	CompetitionDijkstra cd = new CompetitionDijkstra(test, 1, 2, 4);    	
-    	System.out.println(cd.toString());
-    }
+    	CompetitionDijkstra cd = new CompetitionDijkstra(test, 55, 60, 70);    
+    //	cd.printMatrix(cd.graph);
+    	//System.out.println(" ");
+    	//System.out.println(" ");
+    	System.out.println("Time: " + cd.timeRequiredforCompetition());
+    	
+    }*/
 }

@@ -21,9 +21,25 @@ import java.util.*;
  * This class implements the competition using Floyd-Warshall algorithm
  */
 
+class Edge{
+	int v; 
+	double weight;
+	public Edge(int v, double w) {
+		this.v = v;
+		this.weight = w;
+	}
+	/*@Override
+	public String toString() {
+		return "(" + "connected to: " + v + ", with weight: " + weight + ")";
+	}*/
+	
+}
+
+
 public class CompetitionFloydWarshall {
 
 	int sA, sB, sC, N;
+	double time;
 	LinkedList<Edge>[] graph;
     /**
      * @param filename: A filename containing the details of the city road network
@@ -56,14 +72,19 @@ public class CompetitionFloydWarshall {
     			}
     		}
     	}
+    	this.time = timeRequiredforCompetition();
     }
 
 
     /**
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
-    public double timeRequiredforCompetition(){
+    public int timeRequiredforCompetition(){
+    	
+    	//Algorithm
     	double[][] paths = floydWarshall(graph);
+    	
+    	//finds longest shortest path
     	double l = paths[0][0];
     	for(int i = 0; i < paths.length; i++) {
         	for(int j = 0; j < paths[i].length; j++) {
@@ -71,33 +92,39 @@ public class CompetitionFloydWarshall {
         			l = paths[i][j];
         	}
         }
+    	
+    	//calculates time taken 
     	int speed = getSlowestSpeed(sA, sB, sC);
     	l *= 1000;
     	double time = l/speed;
+    	time = (int) Math.ceil(time);
     	
-        return time;
+        return (int) time;
     }
     
-    private int getSlowestSpeed(int sA, int sB, int sC) {
-    	if(sA > sB && sA > sC) 
+    /*
+     * @return int: slowest of the three speeds of the contestants 
+     */
+    public int getSlowestSpeed(int sA, int sB, int sC) {
+    	if(sA < sB && sA < sC) 
     		return sA;
-    	else if(sB > sA && sB > sC)
+    	else if(sB < sA && sB < sC)
     		return sB;
     	else
     		return sC;
     }
     
+    /*
+     * @return double[][]: shortest paths from each node to every other node in the graph
+     */
     public double[][] floydWarshall(LinkedList<Edge>[] graph){
     	double[][] dist = new double[N][N];
     	LinkedList<Edge> e;
-    	//Edge[][] edgeTo = new Edge[N][N];
     	//fills array with edge weights
     	for(int n = 0; n < N; n++) {
 			e = graph[n];
     		for(int m = 0; m < e.size(); m++) {
-    			//System.out.println( i + " " + e.get(j).v + " " + e.get(j).weight);
 				dist[n][e.get(m).v] = e.get(m).weight;	
-				//edgeTo[n][e.get(m).v] = e.get(m);
     		}
     	}
     	for(int c = 0; c < dist.length; c++) {
@@ -106,70 +133,46 @@ public class CompetitionFloydWarshall {
     				dist[c][d] = Double.POSITIVE_INFINITY;
     			if(c == d) {
     				dist[c][d] = 0;
-    				//edgeTo[c][d] = null;
     			}
     		}
     	}
-    	//print
-    	/*System.out.println("Before: ");
-    	for(int a = 0; a < dist.length; a++) {
-    		System.out.println(" ");
-    		for(int b = 0; b < dist[a].length; b++) {
-    			System.out.print(dist[a][b] + "   ");
-    		}
-    	}*/
     	//Algorithm
     	for(int k = 0; k < N; k++) {
     		for(int i = 0; i < N; i++) {
     			for(int j = 0; j < N; j++) {
     				if(dist[i][j] > dist[i][k] + dist[k][j]) {
     					dist[i][j] = dist[i][k] + dist[k][j];   
-    					//edgeTo[i][j] = edgeTo[k][j];
     				}
     			}
     		}
-    	}/*
-    	//print again
-    	System.out.println(" ");
-    	System.out.println(" ");
-    	System.out.println("After: ");
-    	for(int a = 0; a < dist.length; a++) {
-    		System.out.println(" ");
-    		for(int b = 0; b < dist[a].length; b++) {
-    			System.out.print(dist[a][b] + "   ");
-    		}
-    	}		
-    	/*System.out.println(" ");
-    	System.out.println(" ");
-    	System.out.println("   0     1   2   3   4   5   6   7 ");
-    	System.out.print("------------------------------------");
-    	for(int a = 0; a < edgeTo.length; a++) {
-    		System.out.println(" ");
-    		System.out.print(a + "| ");
-    		for(int b = 0; b < edgeTo[a].length; b++) {
-    			if(edgeTo[a][b] == null)
-    				System.out.print("null  ");
-    			else
-    				System.out.print(edgeTo[a][b].v + "   ");
-    		}
-    	}*/
+    	}
+    	
     	return dist;
     }
     
-    @Override
+   /* @Override
    	public String toString(){
    		String graph="";
    		for(int i=0; i<this.graph.length; i++)
    			graph+= "Vertex " + i + " => " + this.graph[i] + "\n";
    		return graph;
    	}
+    
+    public void printMatrix(double[][] graph) {
+    	for(int i = 0; i < N; i++) {
+    		System.out.println(" ");
+    		for(int j = 0; j < N; j++) {
+    			System.out.print(graph[i][j] + "  ");
+    		}
+    	}
+    }
 
        public static void main(String[] args) throws FileNotFoundException {
-       	String test = "1000EWD.txt";
-       	CompetitionFloydWarshall cd = new CompetitionFloydWarshall(test, 50, 60, 70);
+       	String test = "tinyEWD.txt";
+       	CompetitionFloydWarshall cd = new CompetitionFloydWarshall(test, 55, 60, 70);
        	System.out.println(cd.toString());
        	System.out.println(" ");
-       	System.out.println(cd.timeRequiredforCompetition());
-       }
+       	System.out.println("Time: " + cd.timeRequiredforCompetition());
+       }*/
 
 }
