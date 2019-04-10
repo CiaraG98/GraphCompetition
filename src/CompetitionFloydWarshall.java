@@ -33,7 +33,6 @@ class Edge{
 public class CompetitionFloydWarshall {
 
 	int sA, sB, sC, N;
-	double time;
 	LinkedList<Edge>[] graph;//adjacency list
     /**
      * @param filename: A filename containing the details of the city road network
@@ -70,13 +69,11 @@ public class CompetitionFloydWarshall {
         		}
         	}
 		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		catch (NullPointerException e2) {
 			e2.printStackTrace();
 		}
-    	this.time = timeRequiredforCompetition();
     	
     }
 
@@ -85,17 +82,17 @@ public class CompetitionFloydWarshall {
      * @return int: minimum minutes that will pass before the three contestants can meet
      */
     public int timeRequiredforCompetition(){
-    	if(graph == null || sA < 50 || sB < 50 || sC < 50 || sA > 100 || sB > 100 || sC > 100)
+    	if(graph == null || sA < 50 || sB < 50 || sC < 50 || sA > 100 || sB > 100 || sC > 100 || N == 0)
     		return -1;
     	else {
     		//Algorithm
         	double[][] paths = floydWarshall(graph);
         	
         	//finds longest shortest path
-        	double l = paths[0][0];
+        	double l = -1;
         	for(int i = 0; i < paths.length; i++) {
             	for(int j = 0; j < paths[i].length; j++) {
-            		if(paths[i][j] > l)
+            		if(paths[i][j] > l && paths[i][j] != Double.POSITIVE_INFINITY)
             			l = paths[i][j];
             		if(paths[i][j] == Double.POSITIVE_INFINITY)
             			return -1;
@@ -130,13 +127,6 @@ public class CompetitionFloydWarshall {
     public double[][] floydWarshall(LinkedList<Edge>[] graph){
     	double[][] dist = new double[N][N];
     	LinkedList<Edge> e;
-    	//fills array with edge weights
-    	for(int n = 0; n < N; n++) {
-			e = graph[n];
-    		for(int m = 0; m < e.size(); m++) {
-				dist[n][e.get(m).v] = e.get(m).weight;	
-    		}
-    	}
     	for(int c = 0; c < dist.length; c++) {
     		for(int d = 0; d < dist[c].length; d++) {
     			if(dist[c][d] == 0)
@@ -145,6 +135,14 @@ public class CompetitionFloydWarshall {
     				dist[c][d] = 0;
     			}
     		}
+    	//fills array with edge weights
+    	for(int n = 0; n < N; n++) {
+			e = graph[n];
+    		for(int m = 0; m < e.size(); m++) {
+				dist[n][e.get(m).v] = e.get(m).weight;	
+    		}
+    	}
+    	
     	}
     	//Algorithm
     	for(int k = 0; k < N; k++) {

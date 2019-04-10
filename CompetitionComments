@@ -27,3 +27,27 @@
 	public String toString() {
 		return "(" + "connected to: " + v + ", with weight: " + weight + ")";
 	}*/
+	
+	/* public static void main(String[] args) throws FileNotFoundException {
+	    CompetitionDijkstra cd = new CompetitionDijkstra("input-A.txt", 60, 50, 75);
+       	System.out.println("D Time: " + cd.timeRequiredforCompetition());
+       }*/
+               	//System.out.println("Speed: " + speed + ", Longest Shortest Path: " + p);
+       // 	System.out.println(" ");
+          	//System.out.println("Shortest Paths: " + Arrays.toString(shortestPaths));
+          	            	//System.out.println("v: " + i + "  " + Arrays.toString(paths));
+          	 /* public void printMatrix(double[][] graph) {
+    	for(int i = 0; i < N; i++) {
+    		System.out.println(" ");
+    		for(int j = 0; j < N; j++) {
+    			System.out.print(graph[i][j] + "  ");
+    		}
+    	}
+    }
+    public static void main(String[] args) throws FileNotFoundException {
+	    CompetitionFloydWarshall cdTiny = new CompetitionFloydWarshall("input-J.txt", 60, 75, 61);
+       	System.out.println("FL Time: " + cdTiny.timeRequiredforCompetition());
+       	cdTiny.printMatrix(cdTiny.floydWarshall(cdTiny.graph));
+       }*/
+               	//System.out.println("Speed: " + speed + ", Longest Shortest Path: " + l);
+       
